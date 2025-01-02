@@ -3,26 +3,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { Database } from '@/integrations/supabase/types';
 import { UserCheck } from 'lucide-react';
 
-type CollectorProfile = Database['public']['Tables']['profiles']['Row'];
+type MemberCollector = Database['public']['Tables']['members_collectors']['Row'];
 
 const CollectorsList = () => {
   const { data: collectors, isLoading, error } = useQuery({
-    queryKey: ['collectors_profiles'],
+    queryKey: ['members_collectors'],
     queryFn: async () => {
-      console.log('Fetching collectors profiles...');
+      console.log('Fetching collectors from members_collectors...');
       const { data, error } = await supabase
-        .from('profiles')
+        .from('members_collectors')
         .select(`
           id,
-          full_name,
+          name,
           prefix,
-          collector_number,
-          is_active,
+          number,
           email,
-          phone
+          phone,
+          active,
+          created_at,
+          updated_at
         `)
-        .order('collector_number', { ascending: true })
-        .not('collector_number', 'is', null)
+        .order('number', { ascending: true })
         .throwOnError();
       
       if (error) {
@@ -31,7 +32,7 @@ const CollectorsList = () => {
       }
       
       console.log('Fetched collectors:', data);
-      return data as CollectorProfile[];
+      return data as MemberCollector[];
     },
   });
 
@@ -54,8 +55,8 @@ const CollectorsList = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-white">{collector.full_name}</p>
-                    <span className="text-sm text-gray-400">#{collector.collector_number}</span>
+                    <p className="font-medium text-white">{collector.name}</p>
+                    <span className="text-sm text-gray-400">#{collector.number}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-dashboard-text">
                     <UserCheck className="w-4 h-4" />
@@ -65,11 +66,11 @@ const CollectorsList = () => {
               </div>
               <div className="flex items-center gap-2">
                 <div className={`px-3 py-1 rounded-full ${
-                  collector.is_active 
+                  collector.active 
                     ? 'bg-green-500/20 text-green-400' 
                     : 'bg-gray-500/20 text-gray-400'
                 }`}>
-                  {collector.is_active ? 'Active' : 'Inactive'}
+                  {collector.active ? 'Active' : 'Inactive'}
                 </div>
               </div>
             </div>
