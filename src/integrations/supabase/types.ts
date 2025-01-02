@@ -222,17 +222,20 @@ export type Database = {
         Row: {
           address: string | null
           auth_user_id: string
+          collector_number: string | null
           created_at: string
           date_of_birth: string | null
           email: string | null
           full_name: string
           gender: string | null
           id: string
+          is_active: boolean | null
           marital_status: string | null
           member_number: string
           membership_type: string | null
           phone: string | null
           postcode: string | null
+          prefix: string | null
           status: string | null
           town: string | null
           updated_at: string
@@ -240,17 +243,20 @@ export type Database = {
         Insert: {
           address?: string | null
           auth_user_id: string
+          collector_number?: string | null
           created_at?: string
           date_of_birth?: string | null
           email?: string | null
           full_name: string
           gender?: string | null
           id?: string
+          is_active?: boolean | null
           marital_status?: string | null
           member_number: string
           membership_type?: string | null
           phone?: string | null
           postcode?: string | null
+          prefix?: string | null
           status?: string | null
           town?: string | null
           updated_at?: string
@@ -258,17 +264,20 @@ export type Database = {
         Update: {
           address?: string | null
           auth_user_id?: string
+          collector_number?: string | null
           created_at?: string
           date_of_birth?: string | null
           email?: string | null
           full_name?: string
           gender?: string | null
           id?: string
+          is_active?: boolean | null
           marital_status?: string | null
           member_number?: string
           membership_type?: string | null
           phone?: string | null
           postcode?: string | null
+          prefix?: string | null
           status?: string | null
           town?: string | null
           updated_at?: string
@@ -344,17 +353,20 @@ export type Database = {
         Returns: {
           address: string | null
           auth_user_id: string
+          collector_number: string | null
           created_at: string
           date_of_birth: string | null
           email: string | null
           full_name: string
           gender: string | null
           id: string
+          is_active: boolean | null
           marital_status: string | null
           member_number: string
           membership_type: string | null
           phone: string | null
           postcode: string | null
+          prefix: string | null
           status: string | null
           town: string | null
           updated_at: string

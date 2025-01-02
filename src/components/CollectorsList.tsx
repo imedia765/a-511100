@@ -1,33 +1,37 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from '@/integrations/supabase/types';
+import { UserCheck } from 'lucide-react';
 
-type MemberCollector = Database['public']['Tables']['members_collectors']['Row'];
+type CollectorProfile = Database['public']['Tables']['profiles']['Row'];
 
 const CollectorsList = () => {
   const { data: collectors, isLoading, error } = useQuery({
-    queryKey: ['members_collectors'],
+    queryKey: ['collectors_profiles'],
     queryFn: async () => {
-      console.log('Fetching members_collectors...');
+      console.log('Fetching collectors profiles...');
       const { data, error } = await supabase
-        .from('members_collectors')
+        .from('profiles')
         .select(`
           id,
-          collector_profile_id,
-          member_profile_id,
-          created_at,
-          updated_at
+          full_name,
+          prefix,
+          collector_number,
+          is_active,
+          email,
+          phone
         `)
-        .order('created_at', { ascending: true })
+        .order('collector_number', { ascending: true })
+        .not('collector_number', 'is', null)
         .throwOnError();
       
       if (error) {
-        console.error('Error fetching members_collectors:', error);
+        console.error('Error fetching collectors:', error);
         throw error;
       }
       
-      console.log('Fetched members_collectors:', data);
-      return data as MemberCollector[];
+      console.log('Fetched collectors:', data);
+      return data as CollectorProfile[];
     },
   });
 
@@ -45,17 +49,27 @@ const CollectorsList = () => {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white">
-                  MC
+                <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-medium">
+                  {collector.prefix}
                 </div>
                 <div>
-                  <p className="font-medium text-white">Collector ID: {collector.collector_profile_id}</p>
-                  <p className="text-sm text-dashboard-text">Member ID: {collector.member_profile_id}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-white">{collector.full_name}</p>
+                    <span className="text-sm text-gray-400">#{collector.collector_number}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-dashboard-text">
+                    <UserCheck className="w-4 h-4" />
+                    <span>Collector</span>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="px-3 py-1 rounded-full bg-green-500/20 text-green-400">
-                  Active
+                <div className={`px-3 py-1 rounded-full ${
+                  collector.is_active 
+                    ? 'bg-green-500/20 text-green-400' 
+                    : 'bg-gray-500/20 text-gray-400'
+                }`}>
+                  {collector.is_active ? 'Active' : 'Inactive'}
                 </div>
               </div>
             </div>
