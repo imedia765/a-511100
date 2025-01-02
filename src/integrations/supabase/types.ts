@@ -149,24 +149,42 @@ export type Database = {
       }
       members_collectors: {
         Row: {
+          active: boolean | null
           collector_profile_id: string
           created_at: string
+          email: string | null
           id: string
           member_profile_id: string
+          name: string | null
+          number: string | null
+          phone: string | null
+          prefix: string | null
           updated_at: string
         }
         Insert: {
+          active?: boolean | null
           collector_profile_id: string
           created_at?: string
+          email?: string | null
           id?: string
           member_profile_id: string
+          name?: string | null
+          number?: string | null
+          phone?: string | null
+          prefix?: string | null
           updated_at?: string
         }
         Update: {
+          active?: boolean | null
           collector_profile_id?: string
           created_at?: string
+          email?: string | null
           id?: string
           member_profile_id?: string
+          name?: string | null
+          number?: string | null
+          phone?: string | null
+          prefix?: string | null
           updated_at?: string
         }
         Relationships: [
