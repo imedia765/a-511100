@@ -6,9 +6,10 @@ import MonthlyChart from '@/components/MonthlyChart';
 import CustomerRequests from '@/components/CustomerRequests';
 import CollectorsList from '@/components/CollectorsList';
 import SidePanel from '@/components/SidePanel';
+import TotalCount from '@/components/TotalCount';
 import { useState } from 'react';
 import { Switch } from "@/components/ui/switch";
-import { Bell, Globe } from 'lucide-react';
+import { Bell, Globe, Users, UserCheck } from 'lucide-react';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -29,6 +30,19 @@ const Index = () => {
       }
       console.log('Fetched members:', data);
       return data as Tables<'members'>[];
+    },
+  });
+
+  const { data: collectors } = useQuery({
+    queryKey: ['members_collectors'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('members_collectors')
+        .select('*')
+        .throwOnError();
+      
+      if (error) throw error;
+      return data;
     },
   });
 
@@ -73,6 +87,11 @@ const Index = () => {
               <h1 className="text-3xl font-medium mb-2">Members</h1>
               <p className="text-dashboard-muted">View and manage member information</p>
             </header>
+            <TotalCount 
+              count={members?.length || 0}
+              label="Total Members"
+              icon={<Users className="w-6 h-6 text-blue-400" />}
+            />
             <div className="space-y-4">
               {membersLoading ? (
                 <div className="text-center py-4">Loading members...</div>
@@ -125,6 +144,11 @@ const Index = () => {
               <h1 className="text-3xl font-medium mb-2">Collectors</h1>
               <p className="text-dashboard-muted">View all collectors and their assigned members</p>
             </header>
+            <TotalCount 
+              count={collectors?.length || 0}
+              label="Total Collectors"
+              icon={<UserCheck className="w-6 h-6 text-purple-400" />}
+            />
             <CollectorsList />
           </>
         );
