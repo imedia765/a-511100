@@ -19,10 +19,19 @@ const DashboardView = ({ onLogout }: DashboardViewProps) => {
 
       console.log('Fetching profile for user:', user.id);
       
+      // Get user's member number from metadata
+      const memberNumber = user.user_metadata?.member_number;
+      console.log('Member number from metadata:', memberNumber);
+
+      if (!memberNumber) {
+        console.log('No member number found in metadata');
+        return null;
+      }
+
       const { data, error } = await supabase
         .from('members')
         .select('*')
-        .eq('auth_user_id', user.id)
+        .eq('member_number', memberNumber)
         .maybeSingle();
 
       if (error) {
@@ -36,7 +45,7 @@ const DashboardView = ({ onLogout }: DashboardViewProps) => {
       }
 
       if (!data) {
-        console.log('No profile found for user');
+        console.log('No profile found for member number:', memberNumber);
         return null;
       }
 
