@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from 'react';
 import MemberProfileCard from './MemberProfileCard';
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +11,22 @@ interface DashboardViewProps {
 
 const DashboardView = ({ onLogout }: DashboardViewProps) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Set up auth state change listener
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        console.log('Auth state changed:', event);
+        // Invalidate the memberProfile query when auth state changes
+        queryClient.invalidateQueries({ queryKey: ['memberProfile'] });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [queryClient]);
 
   const { data: memberProfile, isError } = useQuery({
     queryKey: ['memberProfile'],
