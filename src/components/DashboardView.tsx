@@ -40,7 +40,7 @@ const DashboardView = ({ onLogout }: DashboardViewProps) => {
   return (
     <div>
       {isError && <p>Error loading member profile.</p>}
-      {memberProfile && <MemberProfileCard profile={memberProfile} />}
+      {memberProfile && <MemberProfileCard memberProfile={memberProfile} />}
       <Button onClick={onLogout}>Logout</Button>
     </div>
   );
