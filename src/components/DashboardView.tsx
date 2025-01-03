@@ -17,11 +17,13 @@ const DashboardView = ({ onLogout }: DashboardViewProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
+      console.log('Fetching profile for user:', user.id);
+      
       const { data, error } = await supabase
         .from('members')
         .select('*')
         .eq('auth_user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching member profile:', error);
@@ -33,6 +35,12 @@ const DashboardView = ({ onLogout }: DashboardViewProps) => {
         throw error;
       }
 
+      if (!data) {
+        console.log('No profile found for user');
+        return null;
+      }
+
+      console.log('Profile found:', data);
       return data;
     },
   });
