@@ -5,10 +5,12 @@ import Index from './pages/Index';
 import Login from './pages/Login';
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from '@tanstack/react-query';
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // Get initial session
@@ -20,12 +22,16 @@ function App() {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log('Auth state changed:', _event, session?.user?.id);
       setSession(session);
+      
+      // Invalidate all queries when auth state changes
+      await queryClient.invalidateQueries();
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [queryClient]);
 
   if (loading) {
     return null; // Or a loading spinner

@@ -4,12 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from '@tanstack/react-query';
 
 const LoginForm = () => {
   const [memberNumber, setMemberNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,11 +49,6 @@ const LoginForm = () => {
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          data: {
-            member_number: memberNumber,
-          }
-        }
       });
 
       // If sign in fails due to invalid credentials, try to sign up
@@ -88,14 +85,9 @@ const LoginForm = () => {
           console.log('Signup successful, attempting final sign in');
           
           // Final sign in attempt after successful signup
-          const { data, error: finalSignInError } = await supabase.auth.signInWithPassword({
+          const { data: finalSignInData, error: finalSignInError } = await supabase.auth.signInWithPassword({
             email,
             password,
-            options: {
-              data: {
-                member_number: memberNumber,
-              }
-            }
           });
 
           if (finalSignInError) {
@@ -104,7 +96,7 @@ const LoginForm = () => {
           }
 
           // Verify session is established
-          if (!data?.session) {
+          if (!finalSignInData?.session) {
             throw new Error('Failed to establish session');
           }
         }
@@ -117,6 +109,9 @@ const LoginForm = () => {
       if (!session) {
         throw new Error('Failed to establish session');
       }
+
+      // Invalidate all queries to refresh data
+      await queryClient.invalidateQueries();
 
       toast({
         title: "Login successful",
