@@ -26,8 +26,13 @@ function App() {
       console.log('Auth state changed:', _event, session?.user?.id);
       setSession(session);
       
-      // Invalidate all queries when auth state changes
-      await queryClient.invalidateQueries();
+      if (!session) {
+        // Clear all queries when logging out
+        await queryClient.resetQueries();
+      } else {
+        // Refresh queries when logging in
+        await queryClient.invalidateQueries();
+      }
     });
 
     return () => subscription.unsubscribe();
