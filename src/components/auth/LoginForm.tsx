@@ -47,6 +47,11 @@ const LoginForm = () => {
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          data: {
+            member_number: memberNumber,
+          }
+        }
       });
 
       // If sign in fails due to invalid credentials, try to sign up
@@ -83,18 +88,34 @@ const LoginForm = () => {
           console.log('Signup successful, attempting final sign in');
           
           // Final sign in attempt after successful signup
-          const { error: finalSignInError } = await supabase.auth.signInWithPassword({
+          const { data, error: finalSignInError } = await supabase.auth.signInWithPassword({
             email,
             password,
+            options: {
+              data: {
+                member_number: memberNumber,
+              }
+            }
           });
 
           if (finalSignInError) {
             console.error('Final sign in error:', finalSignInError);
             throw finalSignInError;
           }
+
+          // Verify session is established
+          if (!data?.session) {
+            throw new Error('Failed to establish session');
+          }
         }
       } else if (signInError) {
         throw signInError;
+      }
+
+      // Verify session after sign in
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Failed to establish session');
       }
 
       toast({
@@ -105,6 +126,9 @@ const LoginForm = () => {
       navigate('/');
     } catch (error: any) {
       console.error('Login error:', error);
+      // Clear any existing session
+      await supabase.auth.signOut();
+      
       toast({
         title: "Login failed",
         description: error.message,
