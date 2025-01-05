@@ -55,7 +55,7 @@ const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
       {/* Mobile Toggle Button */}
       <button
         onClick={toggleSidePanel}
-        className="fixed top-4 left-4 z-50 p-2 rounded-md bg-dashboard-card md:hidden"
+        className="fixed top-24 left-4 z-50 p-2 rounded-md bg-dashboard-card md:hidden text-dashboard-text hover:text-white transition-colors"
       >
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
@@ -70,12 +70,12 @@ const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
 
       {/* Side Panel */}
       <div className={cn(
-        "fixed left-0 top-0 h-screen w-64 glass-card border-r border-white/10 z-40 transition-transform duration-300 ease-in-out",
+        "fixed left-0 top-0 h-screen w-64 glass-card border-r border-white/10 z-40 transition-transform duration-300 ease-in-out mt-[88px]",
         "md:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="p-6 pt-16 md:pt-6">
-          <h2 className="text-xl font-medium mb-6">Navigation</h2>
+        <div className="p-4">
+          <h2 className="text-xl font-medium mb-6 text-dashboard-text">Navigation</h2>
           <Tabs 
             defaultValue="dashboard" 
             orientation="vertical" 
@@ -92,7 +92,7 @@ const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
                 <TabsTrigger 
                   key={value}
                   value={value} 
-                  className="w-full justify-start gap-2 data-[state=active]:bg-white/10 data-[state=active]:text-white"
+                  className="w-full justify-start gap-2 data-[state=active]:bg-white/10 data-[state=active]:text-white px-4 py-2"
                 >
                   <Icon className="w-4 h-4" />
                   {label}
