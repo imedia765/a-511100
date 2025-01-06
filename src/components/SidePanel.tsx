@@ -43,20 +43,20 @@ const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
         <div className="space-y-1.5">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-2 text-sm"
+            className="w-full justify-start gap-2 text-sm group"
             onClick={() => onTabChange('dashboard')}
           >
-            <LayoutDashboard className="h-4 w-4" />
+            <LayoutDashboard className="h-4 w-4 text-[#9b87f5] group-hover:text-[#D6BCFA]" />
             Overview
           </Button>
 
           {(isAdmin || isCollector) && (
             <Button
               variant="ghost"
-              className="w-full justify-start gap-2 text-sm"
+              className="w-full justify-start gap-2 text-sm group"
               onClick={() => onTabChange('users')}
             >
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4 text-[#7E69AB] group-hover:text-[#D6BCFA]" />
               Members
             </Button>
           )}
@@ -65,28 +65,28 @@ const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
             <>
               <Button
                 variant="ghost"
-                className="w-full justify-start gap-2 text-sm"
+                className="w-full justify-start gap-2 text-sm group"
                 onClick={() => onTabChange('financials')}
               >
-                <Wallet className="h-4 w-4" />
+                <Wallet className="h-4 w-4 text-[#6E59A5] group-hover:text-[#D6BCFA]" />
                 Collectors & Financials
               </Button>
 
               <Button
                 variant="ghost"
-                className="w-full justify-start gap-2 text-sm"
+                className="w-full justify-start gap-2 text-sm group"
                 onClick={() => onTabChange('audit')}
               >
-                <History className="h-4 w-4" />
+                <History className="h-4 w-4 text-[#8B5CF6] group-hover:text-[#D6BCFA]" />
                 Audit Logs
               </Button>
 
               <Button
                 variant="ghost"
-                className="w-full justify-start gap-2 text-sm"
+                className="w-full justify-start gap-2 text-sm group"
                 onClick={() => onTabChange('system')}
               >
-                <Settings className="h-4 w-4" />
+                <Settings className="h-4 w-4 text-[#E5DEFF] group-hover:text-[#D6BCFA]" />
                 System
               </Button>
             </>
@@ -97,10 +97,10 @@ const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
       <div className="p-4 lg:p-6 border-t border-white/10">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-2 text-sm text-dashboard-muted hover:text-white"
+          className="w-full justify-start gap-2 text-sm text-dashboard-muted hover:text-white group"
           onClick={handleLogout}
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-4 w-4 text-[#7E69AB] group-hover:text-[#D6BCFA]" />
           Logout
         </Button>
       </div>
