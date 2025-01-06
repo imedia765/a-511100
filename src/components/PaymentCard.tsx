@@ -39,15 +39,15 @@ const PaymentCard = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+        return 'bg-[#7EBF8E]/20 text-[#7EBF8E] border border-[#7EBF8E]/30';
       case 'due':
-        return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+        return 'bg-[#9b87f5]/20 text-[#9b87f5] border border-[#9b87f5]/30';
       case 'overdue':
         return 'bg-rose-500/20 text-rose-400 border border-rose-500/30';
       case 'pending':
-        return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+        return 'bg-[#7E69AB]/20 text-[#7E69AB] border border-[#7E69AB]/30';
       default:
-        return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+        return 'bg-[#7E69AB]/20 text-[#7E69AB] border border-[#7E69AB]/30';
     }
   };
 
@@ -67,24 +67,24 @@ const PaymentCard = ({
   };
 
   return (
-    <Card className="dashboard-card">
+    <Card className="dashboard-card bg-[#1A1F2C]/80">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Annual Payment Section */}
-        <div className="p-6 glass-card rounded-lg border border-white/10 hover:border-white/20 transition-colors">
-          <h3 className="text-lg font-medium text-white mb-4">Annual Payment</h3>
+        <div className="p-6 glass-card rounded-lg border border-[#9b87f5]/10 hover:border-[#9b87f5]/20 transition-colors">
+          <h3 className="text-lg font-medium text-[#D6BCFA] mb-4">Annual Payment</h3>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-2xl font-bold text-white">£40</p>
+              <p className="text-2xl font-bold text-[#E5DEFF]">£40</p>
               <p className="text-sm font-bold" style={{ color: getStatusColor(annualPaymentStatus).split(' ')[1].replace('text-', '') }}>
                 Due: {formatDate(annualPaymentDueDate)}
               </p>
               {lastAnnualPaymentDate && (
                 <div className="mt-2">
-                  <p className="text-xs text-dashboard-muted">
+                  <p className="text-xs text-[#7E69AB]">
                     Last payment: {formatDate(lastAnnualPaymentDate)}
                   </p>
                   {lastAnnualPaymentAmount && (
-                    <p className="text-xs text-emerald-400">
+                    <p className="text-xs text-[#7EBF8E]">
                       Amount: £{lastAnnualPaymentAmount}
                     </p>
                   )}
@@ -100,13 +100,13 @@ const PaymentCard = ({
               </div>
             </div>
           </div>
-          <div className="text-sm text-dashboard-text">
+          <div className="text-sm text-[#D6BCFA]">
             {annualPaymentStatus === 'completed' 
               ? 'Payment completed' 
               : (
                 <div className="space-y-1">
                   <p>Payment {annualPaymentStatus}</p>
-                  <p className="text-dashboard-muted">
+                  <p className="text-[#7E69AB]">
                     {annualPaymentStatus === 'overdue' 
                       ? 'Please complete your overdue payment immediately'
                       : 'Please complete your payment before the due date'}
@@ -117,11 +117,11 @@ const PaymentCard = ({
         </div>
 
         {/* Emergency Collection Section */}
-        <div className="p-6 glass-card rounded-lg border border-white/10 hover:border-white/20 transition-colors">
-          <h3 className="text-lg font-medium text-white mb-4">Emergency Collection</h3>
+        <div className="p-6 glass-card rounded-lg border border-[#9b87f5]/10 hover:border-[#9b87f5]/20 transition-colors">
+          <h3 className="text-lg font-medium text-[#D6BCFA] mb-4">Emergency Collection</h3>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-[#E5DEFF]">
                 £{emergencyCollectionAmount}
               </p>
               <p className="text-sm font-bold" style={{ color: getStatusColor(emergencyCollectionStatus).split(' ')[1].replace('text-', '') }}>
@@ -129,11 +129,11 @@ const PaymentCard = ({
               </p>
               {lastEmergencyPaymentDate && (
                 <div className="mt-2">
-                  <p className="text-xs text-dashboard-muted">
+                  <p className="text-xs text-[#7E69AB]">
                     Last payment: {formatDate(lastEmergencyPaymentDate)}
                   </p>
                   {lastEmergencyPaymentAmount && (
-                    <p className="text-xs text-emerald-400">
+                    <p className="text-xs text-[#7EBF8E]">
                       Amount: £{lastEmergencyPaymentAmount}
                     </p>
                   )}
@@ -149,13 +149,13 @@ const PaymentCard = ({
               </div>
             </div>
           </div>
-          <div className="text-sm text-dashboard-text">
+          <div className="text-sm text-[#D6BCFA]">
             {emergencyCollectionStatus === 'completed' 
               ? 'Payment completed' 
               : (
                 <div className="space-y-1">
                   <p>Payment {emergencyCollectionStatus}</p>
-                  <p className="text-dashboard-muted">
+                  <p className="text-[#7E69AB]">
                     {emergencyCollectionStatus === 'overdue'
                       ? 'Emergency collection payment is overdue'
                       : 'One-time emergency collection payment required'}
