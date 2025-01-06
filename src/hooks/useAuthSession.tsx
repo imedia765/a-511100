@@ -13,11 +13,27 @@ export const useAuthSession = () => {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    setSession(null);
-    await queryClient.resetQueries();
-    localStorage.clear();
-    await supabase.auth.signOut();
-    navigate('/login');
+    try {
+      setLoading(true);
+      await supabase.auth.signOut();
+      setSession(null);
+      await queryClient.resetQueries();
+      localStorage.clear();
+      navigate('/login');
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account",
+      });
+    } catch (error: any) {
+      console.error('Sign out error:', error);
+      toast({
+        title: "Error logging out",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAuthError = async (error: any) => {
@@ -32,12 +48,6 @@ export const useAuthSession = () => {
         errorMessage?.includes('refresh_token_not_found')) {
       console.log('Session error, signing out...');
       await handleSignOut();
-      
-      toast({
-        title: "Session expired",
-        description: "Please sign in again",
-        variant: "destructive",
-      });
     }
   };
 
@@ -78,7 +88,9 @@ export const useAuthSession = () => {
       
       if (_event === 'SIGNED_OUT') {
         console.log('User signed out, clearing session and queries');
-        await handleSignOut();
+        setSession(null);
+        await queryClient.resetQueries();
+        navigate('/login');
         return;
       }
 
@@ -86,7 +98,7 @@ export const useAuthSession = () => {
         console.log('Setting session after', _event);
         setSession(currentSession);
         if (_event === 'SIGNED_IN') {
-          queryClient.resetQueries();
+          await queryClient.resetQueries();
         }
         return;
       }
@@ -100,5 +112,5 @@ export const useAuthSession = () => {
     };
   }, [queryClient, toast, navigate]);
 
-  return { session, loading };
+  return { session, loading, handleSignOut };
 };
