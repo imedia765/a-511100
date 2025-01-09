@@ -95,7 +95,13 @@ const DashboardView = () => {
     <>
       <header className="mb-8">
         <h1 className="text-3xl font-medium mb-2 text-white">Dashboard</h1>
-        <p className="text-dashboard-text">Welcome back!</p>
+        <p className="text-dashboard-text">
+          Welcome back, {' '}
+          <span className="text-dashboard-highlight text-lg font-medium">
+            {memberProfile?.full_name || ''}
+          </span>
+          !
+        </p>
       </header>
       
       <div className="grid gap-6">
