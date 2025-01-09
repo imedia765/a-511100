@@ -24,9 +24,13 @@ const MainHeader = ({ onToggleSidebar }: MainHeaderProps) => {
         </Button>
         
         <div className="flex items-center justify-center flex-1 lg:justify-start">
-          <h1 className="text-lg font-semibold" style={{ color: "#9b87f5" }}>
-            <span className="hidden sm:inline">PWA Burton</span>
-            <span className="sm:hidden">PWA</span>
+          <h1 className="text-lg font-semibold">
+            <span className="hidden sm:inline bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-blue-400 to-blue-500">
+              PWA Burton
+            </span>
+            <span className="sm:hidden bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-blue-400 to-blue-500">
+              PWA
+            </span>
           </h1>
         </div>
 

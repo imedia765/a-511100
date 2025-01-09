@@ -10,8 +10,7 @@ import {
   LogOut
 } from "lucide-react";
 import { UserRole } from "@/hooks/useRoleAccess";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 interface SidePanelProps {
   onTabChange: (tab: string) => void;
@@ -21,11 +20,10 @@ interface SidePanelProps {
 const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
   const isAdmin = userRole === 'admin';
   const isCollector = userRole === 'collector';
-  const navigate = useNavigate();
+  const { handleSignOut } = useAuthSession();
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
+  const handleLogoutClick = () => {
+    handleSignOut(false);
   };
 
   return (
@@ -43,20 +41,20 @@ const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
         <div className="space-y-1.5">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-2 text-sm group"
+            className="w-full justify-start gap-2 text-sm"
             onClick={() => onTabChange('dashboard')}
           >
-            <LayoutDashboard className="h-4 w-4 text-[#9b87f5] group-hover:text-[#D6BCFA]" />
+            <LayoutDashboard className="h-4 w-4" />
             Overview
           </Button>
 
           {(isAdmin || isCollector) && (
             <Button
               variant="ghost"
-              className="w-full justify-start gap-2 text-sm group"
+              className="w-full justify-start gap-2 text-sm"
               onClick={() => onTabChange('users')}
             >
-              <Users className="h-4 w-4 text-[#7E69AB] group-hover:text-[#D6BCFA]" />
+              <Users className="h-4 w-4" />
               Members
             </Button>
           )}
@@ -65,28 +63,28 @@ const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
             <>
               <Button
                 variant="ghost"
-                className="w-full justify-start gap-2 text-sm group"
+                className="w-full justify-start gap-2 text-sm"
                 onClick={() => onTabChange('financials')}
               >
-                <Wallet className="h-4 w-4 text-[#6E59A5] group-hover:text-[#D6BCFA]" />
+                <Wallet className="h-4 w-4" />
                 Collectors & Financials
               </Button>
 
               <Button
                 variant="ghost"
-                className="w-full justify-start gap-2 text-sm group"
+                className="w-full justify-start gap-2 text-sm"
                 onClick={() => onTabChange('audit')}
               >
-                <History className="h-4 w-4 text-[#8B5CF6] group-hover:text-[#D6BCFA]" />
+                <History className="h-4 w-4" />
                 Audit Logs
               </Button>
 
               <Button
                 variant="ghost"
-                className="w-full justify-start gap-2 text-sm group"
+                className="w-full justify-start gap-2 text-sm"
                 onClick={() => onTabChange('system')}
               >
-                <Settings className="h-4 w-4 text-[#E5DEFF] group-hover:text-[#D6BCFA]" />
+                <Settings className="h-4 w-4" />
                 System
               </Button>
             </>
@@ -97,10 +95,10 @@ const SidePanel = ({ onTabChange, userRole }: SidePanelProps) => {
       <div className="p-4 lg:p-6 border-t border-white/10">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-2 text-sm text-dashboard-muted hover:text-white group"
-          onClick={handleLogout}
+          className="w-full justify-start gap-2 text-sm text-dashboard-muted hover:text-white"
+          onClick={handleLogoutClick}
         >
-          <LogOut className="h-4 w-4 text-[#7E69AB] group-hover:text-[#D6BCFA]" />
+          <LogOut className="h-4 w-4" />
           Logout
         </Button>
       </div>
