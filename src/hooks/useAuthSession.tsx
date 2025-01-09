@@ -31,33 +31,14 @@ export function useAuthSession() {
       
       console.log('Sign out successful');
       setSession(null);
-      
-      // Add a small delay to ensure state is fully cleared
-      await new Promise(resolve => setTimeout(resolve, 100));
+      setLoading(false);
       
       // Force a clean page reload to clear any remaining state
-      try {
-        // Check if login page exists before redirect
-        const response = await fetch('/login');
-        if (response.ok) {
-          // Validate origin before redirect
-          const currentOrigin = window.location.origin;
-          if (currentOrigin && currentOrigin !== 'null') {
-            window.location.replace('/login');
-          } else {
-            console.error('Invalid origin, forcing reload');
-            window.location.reload();
-          }
-        } else {
-          console.error('Login page not found, forcing reload');
-          window.location.reload();
-        }
-      } catch (error) {
-        console.error('Redirect failed, forcing reload:', error);
-        window.location.reload();
-      }
+      window.location.href = '/login';
+      
     } catch (error: any) {
       console.error('Error during sign out:', error);
+      setLoading(false);
       let description = error.message;
       if (error.message.includes('502')) {
         description = "Failed to connect to the server. Please check your network connection and try again.";
@@ -67,8 +48,6 @@ export function useAuthSession() {
         description,
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -140,9 +119,7 @@ export function useAuthSession() {
       console.log('Auth state changed:', {
         event,
         hasSession: !!currentSession,
-        userId: currentSession?.user?.id,
-        accessToken: currentSession?.access_token ? 'exists' : 'none',
-        refreshToken: currentSession?.refresh_token ? 'exists' : 'none'
+        userId: currentSession?.user?.id
       });
       
       if (event === 'SIGNED_OUT') {
@@ -151,29 +128,6 @@ export function useAuthSession() {
         const isLoginFlow = window.location.pathname === '/login';
         await handleSignOut(isLoginFlow);
         return;
-      } else if (event === 'TOKEN_REFRESHED') {
-        if (!currentSession) {
-          console.log('Token refresh failed - no session');
-          toast({
-            title: "Session Expired",
-            description: "Please sign in again",
-            variant: "destructive",
-          });
-          await handleSignOut();
-          return;
-        }
-        
-        // Validate tokens
-        if (!currentSession.access_token || !currentSession.refresh_token) {
-          console.log('Invalid tokens after refresh');
-          toast({
-            title: "Session Error",
-            description: "Invalid session tokens",
-            variant: "destructive",
-          });
-          await handleSignOut();
-          return;
-        }
       }
 
       if (event === 'SIGNED_IN') {
