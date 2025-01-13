@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { AlertCircle, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { format } from 'date-fns';
 
 const AnnouncementsManager = () => {
   const { toast } = useToast();
@@ -96,15 +97,15 @@ const AnnouncementsManager = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="p-6">
-        <h3 className="text-lg font-medium mb-4">Create Announcement</h3>
+      <Card className="p-6 bg-dashboard-card border-dashboard-cardBorder">
+        <h3 className="text-lg font-medium mb-4 text-white">Create Announcement</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Input
               placeholder="Announcement Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mb-2"
+              className="bg-dashboard-card border-dashboard-cardBorder text-dashboard-text"
             />
           </div>
           <div>
@@ -112,12 +113,12 @@ const AnnouncementsManager = () => {
               placeholder="Announcement Message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="mb-2"
+              className="bg-dashboard-card border-dashboard-cardBorder text-dashboard-text"
             />
           </div>
           <div>
             <Select value={severity} onValueChange={setSeverity}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-dashboard-card border-dashboard-cardBorder text-dashboard-text">
                 <SelectValue placeholder="Select severity" />
               </SelectTrigger>
               <SelectContent>
@@ -128,40 +129,55 @@ const AnnouncementsManager = () => {
               </SelectContent>
             </Select>
           </div>
-          <Button type="submit" disabled={createMutation.isPending}>
+          <Button 
+            type="submit" 
+            disabled={createMutation.isPending}
+            className="bg-dashboard-accent1 hover:bg-dashboard-accent1/80 text-white"
+          >
             Publish Announcement
           </Button>
         </form>
       </Card>
 
-      <Card className="p-6">
-        <h3 className="text-lg font-medium mb-4">Current Announcements</h3>
+      <Card className="p-6 bg-dashboard-card border-dashboard-cardBorder">
+        <h3 className="text-lg font-medium mb-4 text-white">Current Announcements</h3>
         <div className="space-y-4">
           {isLoading ? (
-            <p>Loading announcements...</p>
+            <p className="text-dashboard-muted">Loading announcements...</p>
           ) : announcements?.length === 0 ? (
-            <p>No announcements found.</p>
+            <p className="text-dashboard-muted">No announcements found.</p>
           ) : (
             announcements?.map((announcement) => (
               <div
                 key={announcement.id}
-                className="flex items-start justify-between p-4 border rounded-lg"
+                className="flex items-start justify-between p-4 border border-dashboard-cardBorder rounded-lg bg-dashboard-card/50 hover:bg-dashboard-cardHover/50 transition-colors"
               >
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4" />
-                    <h4 className="font-medium">{announcement.title}</h4>
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertCircle className={`h-4 w-4 
+                      ${announcement.severity === 'info' ? 'text-dashboard-info' : ''}
+                      ${announcement.severity === 'success' ? 'text-dashboard-success' : ''}
+                      ${announcement.severity === 'warning' ? 'text-dashboard-warning' : ''}
+                      ${announcement.severity === 'error' ? 'text-dashboard-error' : ''}
+                    `} />
+                    <h4 className="font-medium text-white">{announcement.title}</h4>
                   </div>
-                  <p className="mt-1 text-sm text-gray-600">{announcement.message}</p>
-                  <span className="mt-2 inline-block text-xs px-2 py-1 rounded-full bg-gray-100">
-                    {announcement.severity}
-                  </span>
+                  <p className="mt-1 text-sm text-dashboard-text">{announcement.message}</p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-xs px-2 py-1 rounded-full bg-dashboard-card text-dashboard-muted">
+                      {announcement.severity}
+                    </span>
+                    <span className="text-xs text-dashboard-muted">
+                      {format(new Date(announcement.created_at), 'PPp')}
+                    </span>
+                  </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => deleteMutation.mutate(announcement.id)}
                   disabled={deleteMutation.isPending}
+                  className="text-dashboard-muted hover:text-dashboard-error"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

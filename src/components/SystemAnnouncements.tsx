@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { format } from 'date-fns';
 
 const SystemAnnouncements = () => {
   const { data: announcements, refetch } = useQuery({
@@ -73,9 +74,14 @@ const SystemAnnouncements = () => {
                 ${announcement.severity === 'error' ? 'text-dashboard-error' : ''}
               `} />
               <div className="flex-1">
-                <AlertTitle className="text-xl mb-3 font-medium text-white tracking-wide">
-                  {announcement.title}
-                </AlertTitle>
+                <div className="flex justify-between items-start mb-2">
+                  <AlertTitle className="text-xl font-medium text-white tracking-wide">
+                    {announcement.title}
+                  </AlertTitle>
+                  <span className="text-sm text-dashboard-muted">
+                    {format(new Date(announcement.created_at), 'PPp')}
+                  </span>
+                </div>
                 <AlertDescription className="text-dashboard-text text-base leading-relaxed whitespace-pre-wrap">
                   {announcement.message}
                 </AlertDescription>
