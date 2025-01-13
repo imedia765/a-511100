@@ -42,27 +42,52 @@ const SystemAnnouncements = () => {
   }, [refetch]);
 
   return (
-    <div className="dashboard-card h-[400px] transition-all duration-300 hover:shadow-lg overflow-y-auto">
-      <h2 className="text-xl font-semibold mb-6 text-dashboard-accent1">System Announcements</h2>
-      <div className="space-y-4">
+    <div className="dashboard-card h-[600px] transition-all duration-300 hover:shadow-lg overflow-y-auto bg-dashboard-card/50 backdrop-blur-sm border border-dashboard-cardBorder">
+      <h2 className="text-2xl font-semibold mb-8 text-dashboard-accent1 tracking-wide">
+        System Announcements
+      </h2>
+      <div className="space-y-6">
         {announcements?.map((announcement) => (
           <Alert 
             key={announcement.id} 
             variant={announcement.severity === "error" ? "destructive" : "default"}
-            className="bg-dashboard-card border-dashboard-cardBorder"
+            className={`
+              bg-dashboard-card/80 
+              border-l-4 
+              ${announcement.severity === 'info' ? 'border-l-dashboard-info' : ''}
+              ${announcement.severity === 'success' ? 'border-l-dashboard-success' : ''}
+              ${announcement.severity === 'warning' ? 'border-l-dashboard-warning' : ''}
+              ${announcement.severity === 'error' ? 'border-l-dashboard-error' : ''}
+              p-6
+              transition-all
+              duration-200
+              hover:bg-dashboard-cardHover/80
+            `}
           >
-            <AlertCircle className="h-4 w-4 text-dashboard-accent2" />
-            <AlertTitle className="text-dashboard-accent2">{announcement.title}</AlertTitle>
-            <AlertDescription className="text-dashboard-text">
-              {announcement.message}
-            </AlertDescription>
+            <div className="flex items-start gap-3">
+              <AlertCircle className={`
+                h-5 w-5 mt-1
+                ${announcement.severity === 'info' ? 'text-dashboard-info' : ''}
+                ${announcement.severity === 'success' ? 'text-dashboard-success' : ''}
+                ${announcement.severity === 'warning' ? 'text-dashboard-warning' : ''}
+                ${announcement.severity === 'error' ? 'text-dashboard-error' : ''}
+              `} />
+              <div className="flex-1">
+                <AlertTitle className="text-xl mb-3 font-medium text-white tracking-wide">
+                  {announcement.title}
+                </AlertTitle>
+                <AlertDescription className="text-dashboard-text text-base leading-relaxed whitespace-pre-wrap">
+                  {announcement.message}
+                </AlertDescription>
+              </div>
+            </div>
           </Alert>
         ))}
         {(!announcements || announcements.length === 0) && (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>No Announcements</AlertTitle>
-            <AlertDescription>
+          <Alert className="bg-dashboard-card border-dashboard-cardBorder">
+            <AlertCircle className="h-5 w-5 text-dashboard-muted" />
+            <AlertTitle className="text-lg font-medium text-dashboard-muted">No Announcements</AlertTitle>
+            <AlertDescription className="text-dashboard-text">
               There are currently no system announcements.
             </AlertDescription>
           </Alert>
