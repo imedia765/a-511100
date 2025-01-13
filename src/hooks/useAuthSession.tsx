@@ -31,14 +31,15 @@ export function useAuthSession() {
       
       console.log('Sign out successful');
       setSession(null);
-      setLoading(false);
+      
+      // Add a small delay to ensure state is fully cleared
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       // Force a clean page reload to clear any remaining state
       window.location.href = '/login';
       
     } catch (error: any) {
       console.error('Error during sign out:', error);
-      setLoading(false);
       let description = error.message;
       if (error.message.includes('502')) {
         description = "Failed to connect to the server. Please check your network connection and try again.";
@@ -48,6 +49,8 @@ export function useAuthSession() {
         description,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,12 +59,14 @@ export function useAuthSession() {
     
     if (error.message.includes('refresh_token_not_found') || 
         error.message.includes('invalid refresh token')) {
+      console.log('Token refresh failed, signing out...');
+      await handleSignOut();
+      
       toast({
         title: "Session Expired",
         description: "Please sign in again",
         variant: "destructive",
       });
-      await handleSignOut();
     } else {
       toast({
         title: "Authentication Error",
@@ -82,12 +87,8 @@ export function useAuthSession() {
         console.log('Fetching current session...');
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
         
-        console.log('Session fetch result:', {
-          session: currentSession ? 'exists' : 'null',
-          error: error ? error.message : 'none'
-        });
-        
         if (error) {
+          console.error('Session fetch error:', error);
           await handleAuthError(error);
           return;
         }
@@ -96,6 +97,11 @@ export function useAuthSession() {
           setSession(currentSession);
           if (currentSession?.user) {
             console.log('Session initialized for user:', currentSession.user.id);
+          } else {
+            console.log('No active session found');
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
           }
         }
       } catch (error: any) {
@@ -111,10 +117,7 @@ export function useAuthSession() {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-      if (!mounted) {
-        console.log('Auth state change ignored - component unmounted');
-        return;
-      }
+      if (!mounted) return;
 
       console.log('Auth state changed:', {
         event,
@@ -122,11 +125,9 @@ export function useAuthSession() {
         userId: currentSession?.user?.id
       });
       
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
-        // Skip storage clear if this is part of login flow
-        const isLoginFlow = window.location.pathname === '/login';
-        await handleSignOut(isLoginFlow);
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !currentSession) {
+        console.log('User signed out or token refresh failed');
+        await handleSignOut();
         return;
       }
 
