@@ -82,7 +82,7 @@ const CollectorPaymentSummary = ({ collectorName }: PaymentSummaryProps) => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-white">
-                <span className="text-[#0EA5E9]">£{collectedYearlyAmount}</span> / £{totalYearlyAmount}
+                £{collectedYearlyAmount} / £{totalYearlyAmount}
               </p>
               <p className="text-sm text-dashboard-muted">Amount collected</p>
               <p className="text-sm text-dashboard-warning font-medium mt-1">
