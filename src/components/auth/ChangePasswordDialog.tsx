@@ -18,7 +18,6 @@ interface ChangePasswordDialogProps {
   isFirstTimeLogin?: boolean;
 }
 
-// Define the expected response type from the RPC call
 interface PasswordResetResponse {
   success: boolean;
   error?: string;
@@ -26,7 +25,6 @@ interface PasswordResetResponse {
   code?: string;
 }
 
-// Define the input parameters manually since it's not in DatabaseFunctions yet
 interface PasswordResetParams {
   member_number: string;
   new_password: string;
