@@ -9,39 +9,39 @@ interface MembersListContentProps {
   members: Member[];
   isLoading: boolean;
   userRole: string | null;
-  onPaymentClick: (memberId: string) => void;
-  onEditClick: (memberId: string) => void;
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onEditClick: (memberId: string) => void;
+  onDeleteClick: (memberId: string) => void;
 }
 
 const MembersListContent = ({
   members,
   isLoading,
   userRole,
-  onPaymentClick,
-  onEditClick,
   currentPage,
   totalPages,
   onPageChange,
+  onEditClick,
+  onDeleteClick,
 }: MembersListContentProps) => {
   return (
     <div className="space-y-4">
-      <ScrollArea className="h-[600px] w-full rounded-md">
+      <ScrollArea className="h-[calc(100vh-16rem)] w-full rounded-md">
         {isLoading ? (
           <div className="flex justify-center items-center h-32">
             <Loader2 className="h-8 w-8 animate-spin text-dashboard-accent1" />
           </div>
         ) : (
-          <Accordion type="single" collapsible className="space-y-4">
+          <Accordion type="single" collapsible className="space-y-4 px-1">
             {members.map((member) => (
               <MemberCard
                 key={member.id}
                 member={member}
                 userRole={userRole}
-                onPaymentClick={() => onPaymentClick(member.id)}
                 onEditClick={() => onEditClick(member.id)}
+                onDeleteClick={() => onDeleteClick(member.id)}
               />
             ))}
           </Accordion>
@@ -49,7 +49,7 @@ const MembersListContent = ({
       </ScrollArea>
       
       {!isLoading && members.length > 0 && totalPages > 1 && (
-        <div className="py-4">
+        <div className="py-4 overflow-x-auto">
           <PaginationControls
             currentPage={currentPage}
             totalPages={totalPages}
