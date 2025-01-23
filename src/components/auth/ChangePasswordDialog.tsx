@@ -28,26 +28,33 @@ const ChangePasswordDialog = ({
 
   const handleSubmit = async (values: any) => {
     console.log("[PasswordChange] Starting password change process", {
+      values,
       memberNumber,
       isFirstTimeLogin,
       timestamp: new Date().toISOString()
     });
 
     if (!values.newPassword || !values.confirmPassword || (!isFirstTimeLogin && !values.currentPassword)) {
-      console.error("[PasswordChange] Missing required password fields");
-      toast.error("Please fill in all password fields");
+      const error = "Missing required password fields";
+      console.error("[PasswordChange] Validation error:", error);
+      toast.error(error);
       return;
     }
 
     if (values.newPassword !== values.confirmPassword) {
-      console.error("[PasswordChange] Password mismatch");
-      toast.error("Passwords do not match");
+      const error = "Passwords do not match";
+      console.error("[PasswordChange] Validation error:", error);
+      toast.error(error);
       return;
     }
 
     try {
       setIsSubmitting(true);
-      console.log("[PasswordChange] Calling handle_password_reset RPC");
+      console.log("[PasswordChange] Preparing RPC call with params:", {
+        memberNumber,
+        hasNewPassword: !!values.newPassword,
+        timestamp: new Date().toISOString()
+      });
 
       const { data, error } = await supabase.rpc('handle_password_reset', {
         member_number: memberNumber,
@@ -65,12 +72,24 @@ const ChangePasswordDialog = ({
       console.log("[PasswordChange] RPC response received", {
         success: !error,
         hasData: !!data,
+        error: error?.message,
         timestamp: new Date().toISOString()
       });
 
       if (error) {
-        console.error("[PasswordChange] Error:", error);
+        console.error("[PasswordChange] RPC error:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
         toast.error(error.message || "Failed to change password");
+        return;
+      }
+
+      if (!data?.success) {
+        console.error("[PasswordChange] Operation failed:", data);
+        toast.error(data?.error || "Failed to change password");
         return;
       }
 
@@ -84,7 +103,11 @@ const ChangePasswordDialog = ({
       }
 
     } catch (error: any) {
-      console.error("[PasswordChange] Unexpected error:", error);
+      console.error("[PasswordChange] Unexpected error:", {
+        error,
+        message: error.message,
+        stack: error.stack
+      });
       toast.error(error.message || "An unexpected error occurred");
     } finally {
       setIsSubmitting(false);

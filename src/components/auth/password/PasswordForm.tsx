@@ -52,11 +52,24 @@ export const PasswordForm = ({
     isDirty: form.formState.isDirty,
     isSubmitting: form.formState.isSubmitting,
     errors: form.formState.errors,
+    values: form.getValues(),
+    timestamp: new Date().toISOString()
   });
+
+  const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("[PasswordForm] Submitting form:", {
+      hasCurrentPassword: !!values.currentPassword,
+      hasNewPassword: !!values.newPassword,
+      hasConfirmPassword: !!values.confirmPassword,
+      timestamp: new Date().toISOString()
+    });
+    
+    await onSubmit(values);
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
         {!isFirstTimeLogin && (
           <FormField
             control={form.control}
