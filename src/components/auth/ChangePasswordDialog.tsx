@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PasswordForm } from "./password/PasswordForm";
 import { PasswordRequirements } from "./password/PasswordRequirements";
+import { DatabaseFunctions } from "@/integrations/supabase/types/functions";
 
 interface ChangePasswordDialogProps {
   open: boolean;
@@ -27,13 +28,7 @@ interface PasswordResetResponse {
 }
 
 // Define the input parameters type for the RPC call
-interface PasswordResetParams {
-  member_number: string;
-  new_password: string;
-  ip_address: string;
-  user_agent: string;
-  client_info: string;
-}
+type PasswordResetParams = DatabaseFunctions['handle_password_reset']['Args'];
 
 const ChangePasswordDialog = ({
   open,
@@ -73,21 +68,18 @@ const ChangePasswordDialog = ({
         timestamp: new Date().toISOString()
       });
 
-      const { data, error } = await supabase.rpc<PasswordResetResponse, PasswordResetParams>(
-        'handle_password_reset',
-        {
-          member_number: memberNumber,
-          new_password: values.newPassword,
-          ip_address: window.location.hostname,
-          user_agent: navigator.userAgent,
-          client_info: JSON.stringify({
-            platform: navigator.platform,
-            language: navigator.language,
-            timestamp: new Date().toISOString(),
-            isFirstTimeLogin
-          })
-        }
-      );
+      const { data, error } = await supabase.rpc('handle_password_reset', {
+        member_number: memberNumber,
+        new_password: values.newPassword,
+        ip_address: window.location.hostname,
+        user_agent: navigator.userAgent,
+        client_info: JSON.stringify({
+          platform: navigator.platform,
+          language: navigator.language,
+          timestamp: new Date().toISOString(),
+          isFirstTimeLogin
+        })
+      });
 
       console.log("[PasswordChange] RPC response received", {
         success: !error,
@@ -107,9 +99,10 @@ const ChangePasswordDialog = ({
         return;
       }
 
-      if (!data?.success) {
-        console.error("[PasswordChange] Operation failed:", data);
-        toast.error(data?.error || "Failed to change password");
+      const response = data as PasswordResetResponse;
+      if (!response.success) {
+        console.error("[PasswordChange] Operation failed:", response);
+        toast.error(response.error || "Failed to change password");
         return;
       }
 
