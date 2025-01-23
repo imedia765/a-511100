@@ -27,8 +27,14 @@ interface PasswordResetResponse {
   code?: string;
 }
 
-// Define the input parameters type for the RPC call
-type PasswordResetParams = DatabaseFunctions['handle_password_reset']['Args'];
+// Define the input parameters manually since it's not in DatabaseFunctions yet
+interface PasswordResetParams {
+  member_number: string;
+  new_password: string;
+  ip_address?: string;
+  user_agent?: string;
+  client_info?: string;
+}
 
 const ChangePasswordDialog = ({
   open,
@@ -99,7 +105,7 @@ const ChangePasswordDialog = ({
         return;
       }
 
-      const response = data as PasswordResetResponse;
+      const response = data as unknown as PasswordResetResponse;
       if (!response.success) {
         console.error("[PasswordChange] Operation failed:", response);
         toast.error(response.error || "Failed to change password");
