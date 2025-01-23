@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Key } from "lucide-react";
 import {
   Dialog,
@@ -16,7 +16,6 @@ interface ChangePasswordDialogProps {
   onOpenChange: (open: boolean) => void;
   memberNumber: string;
   isFirstTimeLogin?: boolean;
-  userName?: string; // Optional prop for user's name
 }
 
 // Define the expected response type from the RPC call
@@ -41,9 +40,36 @@ const ChangePasswordDialog = ({
   onOpenChange,
   memberNumber,
   isFirstTimeLogin = false,
-  userName = "Member", // Default to "Member" if name not provided
 }: ChangePasswordDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [memberName, setMemberName] = useState<string>("Loading...");
+
+  useEffect(() => {
+    const fetchMemberName = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('members')
+          .select('full_name')
+          .eq('member_number', memberNumber)
+          .single();
+
+        if (error) {
+          console.error('Error fetching member name:', error);
+          setMemberName("Unknown Member");
+          return;
+        }
+
+        setMemberName(data.full_name);
+      } catch (error) {
+        console.error('Error in fetchMemberName:', error);
+        setMemberName("Unknown Member");
+      }
+    };
+
+    if (open && memberNumber) {
+      fetchMemberName();
+    }
+  }, [open, memberNumber]);
 
   const handleSubmit = async (values: any) => {
     console.log("[PasswordChange] Starting password change process", {
@@ -143,7 +169,7 @@ const ChangePasswordDialog = ({
             {isFirstTimeLogin ? "Set New Password" : "Change Password"}
           </DialogTitle>
           <div className="text-sm text-dashboard-text mt-2">
-            <p className="mb-1">Member: <span className="font-medium">{userName}</span></p>
+            <p className="mb-1">Member: <span className="font-medium">{memberName}</span></p>
             <p>Member Number: <span className="font-medium">{memberNumber}</span></p>
           </div>
         </DialogHeader>
