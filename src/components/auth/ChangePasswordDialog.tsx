@@ -18,6 +18,14 @@ interface ChangePasswordDialogProps {
   isFirstTimeLogin?: boolean;
 }
 
+// Define the expected response type from the RPC call
+interface PasswordResetResponse {
+  success: boolean;
+  error?: string;
+  message?: string;
+  code?: string;
+}
+
 const ChangePasswordDialog = ({
   open,
   onOpenChange,
@@ -56,7 +64,7 @@ const ChangePasswordDialog = ({
         timestamp: new Date().toISOString()
       });
 
-      const { data, error } = await supabase.rpc('handle_password_reset', {
+      const { data, error } = await supabase.rpc<PasswordResetResponse>('handle_password_reset', {
         member_number: memberNumber,
         new_password: values.newPassword,
         ip_address: window.location.hostname,
