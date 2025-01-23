@@ -15,7 +15,11 @@ import { Lock } from "lucide-react";
 
 const formSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  newPassword: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
   confirmPassword: z.string()
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Passwords don't match",
@@ -44,6 +48,12 @@ export const PasswordForm = ({
     },
   });
 
+  console.log("[PasswordForm] Form state:", {
+    isDirty: form.formState.isDirty,
+    isSubmitting: form.formState.isSubmitting,
+    errors: form.formState.errors,
+  });
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -61,7 +71,7 @@ export const PasswordForm = ({
                     className="bg-dashboard-dark border-dashboard-cardBorder text-dashboard-text focus:border-dashboard-accent1" 
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-red-500" />
               </FormItem>
             )}
           />
@@ -80,7 +90,7 @@ export const PasswordForm = ({
                   className="bg-dashboard-dark border-dashboard-cardBorder text-dashboard-text focus:border-dashboard-accent1" 
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
@@ -98,7 +108,7 @@ export const PasswordForm = ({
                   className="bg-dashboard-dark border-dashboard-cardBorder text-dashboard-text focus:border-dashboard-accent1" 
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
@@ -118,8 +128,9 @@ export const PasswordForm = ({
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-[#9b87f5] text-white hover:bg-[#7E69AB] transition-all duration-200"
+            className="bg-[#9b87f5] text-white hover:bg-[#7E69AB] transition-all duration-200 flex items-center gap-2"
           >
+            <Lock className="w-4 h-4" />
             {isSubmitting ? "Changing..." : "Change Password"}
           </Button>
         </div>

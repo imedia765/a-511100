@@ -27,11 +27,29 @@ const ChangePasswordDialog = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (values: any) => {
-    console.log("Starting password change for member:", memberNumber);
+    console.log("[PasswordChange] Starting password change process", {
+      memberNumber,
+      isFirstTimeLogin,
+      timestamp: new Date().toISOString()
+    });
+
+    if (!values.newPassword || !values.confirmPassword || (!isFirstTimeLogin && !values.currentPassword)) {
+      console.error("[PasswordChange] Missing required password fields");
+      toast.error("Please fill in all password fields");
+      return;
+    }
+
+    if (values.newPassword !== values.confirmPassword) {
+      console.error("[PasswordChange] Password mismatch");
+      toast.error("Passwords do not match");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
+      console.log("[PasswordChange] Calling handle_password_reset RPC");
 
-      const { error } = await supabase.rpc('handle_password_reset', {
+      const { data, error } = await supabase.rpc('handle_password_reset', {
         member_number: memberNumber,
         new_password: values.newPassword,
         ip_address: window.location.hostname,
@@ -39,17 +57,24 @@ const ChangePasswordDialog = ({
         client_info: JSON.stringify({
           platform: navigator.platform,
           language: navigator.language,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          isFirstTimeLogin
         })
       });
 
+      console.log("[PasswordChange] RPC response received", {
+        success: !error,
+        hasData: !!data,
+        timestamp: new Date().toISOString()
+      });
+
       if (error) {
-        console.error("Password change error:", error);
+        console.error("[PasswordChange] Error:", error);
         toast.error(error.message || "Failed to change password");
         return;
       }
 
-      console.log("Password changed successfully for member:", memberNumber);
+      console.log("[PasswordChange] Password changed successfully");
       toast.success("Password changed successfully");
       
       if (!isFirstTimeLogin) {
@@ -59,7 +84,7 @@ const ChangePasswordDialog = ({
       }
 
     } catch (error: any) {
-      console.error("Error in password change:", error);
+      console.error("[PasswordChange] Unexpected error:", error);
       toast.error(error.message || "An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
