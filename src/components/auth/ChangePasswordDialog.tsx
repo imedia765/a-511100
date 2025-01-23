@@ -10,13 +10,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PasswordForm } from "./password/PasswordForm";
 import { PasswordRequirements } from "./password/PasswordRequirements";
-import { DatabaseFunctions } from "@/integrations/supabase/types/functions";
 
 interface ChangePasswordDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   memberNumber: string;
   isFirstTimeLogin?: boolean;
+  userName?: string; // Optional prop for user's name
 }
 
 // Define the expected response type from the RPC call
@@ -41,6 +41,7 @@ const ChangePasswordDialog = ({
   onOpenChange,
   memberNumber,
   isFirstTimeLogin = false,
+  userName = "Member", // Default to "Member" if name not provided
 }: ChangePasswordDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -141,6 +142,10 @@ const ChangePasswordDialog = ({
             <Key className="w-5 h-5" />
             {isFirstTimeLogin ? "Set New Password" : "Change Password"}
           </DialogTitle>
+          <div className="text-sm text-dashboard-text mt-2">
+            <p className="mb-1">Member: <span className="font-medium">{userName}</span></p>
+            <p>Member Number: <span className="font-medium">{memberNumber}</span></p>
+          </div>
         </DialogHeader>
 
         <PasswordRequirements />
